@@ -2,7 +2,7 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from bson import ObjectId
 
-uri = "mongodb+srv://bala2059:Jck0u6hUCvCQ3y8s@cluster0.gv6yaqj.mongodb.net/?retryWrites=true&w=majority"
+uri = "mongodb+srv://bala2059:tYqXH7lz0jMUDg9w@cluster0.gv6yaqj.mongodb.net/?retryWrites=true&w=majority"
 
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi("1"))
@@ -14,77 +14,39 @@ try:
 except Exception as e:
     print(e)
 
-db = client["contact_manager"]
-contacts_collection = db["contacts"]
 
 
-def add_contact(name, email, phone):
-    contact = {"name": name, "email": email, "phone": phone}
-    contacts_collection.insert_one(contact)
+DB = client["contact_manager"] 
 
+contacts = DB["contacts"]  
 
-def get_all_contacts():
-    return list(contacts_collection.find())
+data = [
+    {"name": "Alice", "phone": "+1234567890", "email": "alice@example.com"},
+    {"name": "Bob", "phone": "+9876543210", "email": "bob@example.com"},
+    {"name": "Charlie", "phone": "+1112233445", "email": "charlie@example.com"},
+    {"name": "David", "phone": "+5556667777", "email": "david@example.com"},
+    {"name": "Eva", "phone": "+9998887777", "email": "eva@example.com"},
+    {"name": "Frank", "phone": "+4443332222", "email": "frank@example.com"},
+    {"name": "Grace", "phone": "+7778889999", "email": "grace@example.com"},
+ ]
 
+# # Create Operation
+# contacts.insert_one({"name": "Alice", "phone": "+1234567890", "email": "alice@example.com"})
 
-def get_contact(contact_id):
-    return contacts_collection.find_one({"_id": ObjectId(contact_id)})
+# contacts.insert_many(data)
 
+"---------"
+# update operations
 
-def update_contact(contact_id, name, email, phone):
-    updated_contact = {"name": name, "email": email, "phone": phone}
-    contacts_collection.update_one(
-        {"_id": ObjectId(contact_id)}, {"$set": updated_contact}
-    )
+# query = {"_id": ObjectId("65d7267cfa110df221903604")}
+# update = {"$set": {"phone": +9111586942}}
 
+# contacts.update_one(query, update)
 
-def delete_contact(contact_id):
-    contacts_collection.delete_one({"_id": ObjectId(contact_id)})
+"----------"
 
+# Delete operations
 
-def search_contacts(query):
-    return list(
-        contacts_collection.find(
-            {
-                "$or": [
-                    {"name": {"$regex": query, "$options": "i"}},
-                    {"email": {"$regex": query, "$options": "i"}},
-                    {"phone": {"$regex": query, "$options": "i"}},
-                ]
-            }
-        )
-    )
+query = {"_id": ObjectId("65d72867357d3c32c49588b0")}
 
-
-def sort_contacts(field):
-    return list(contacts_collection.find().sort(field))
-
-
-if __name__ == "__main__":
-    # Example usage:
-    add_contact("John Doe", "john@example.com", "123-456-7890")
-    add_contact("Jane Smith", "jane@example.com", "987-654-3210")
-
-    print("All Contacts:")
-    print(get_all_contacts())
-
-    print("\nSearching for 'John':")
-    print(search_contacts("John"))
-
-    print("\nSorting by name:")
-    print(sort_contacts("name"))
-
-    # Update and delete example
-    contact_id_to_update = str(get_all_contacts()[0]["_id"])
-    update_contact(
-        contact_id_to_update,
-        "John Doe Updated",
-        "john.updated@example.com",
-        "555-555-5555",
-    )
-
-    contact_id_to_delete = str(get_all_contacts()[1]["_id"])
-    delete_contact(contact_id_to_delete)
-
-    print("\nAfter Update and Delete:")
-    print(get_all_contacts())
+contacts.delete_one(query)
